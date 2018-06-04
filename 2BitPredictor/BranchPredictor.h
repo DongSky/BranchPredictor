@@ -3,7 +3,7 @@
 #include <iostream>
 #include <bits/stdc++.h>
 #include <ctime>
-#define MAX_SIZE 8000
+#define MAX_SIZE 4000
 
 using namespace std;
 
@@ -17,11 +17,9 @@ public:
 
 	//eg.    bool prediction[4000]
 
-	bool prediction[8000];
+	bool prediction[4000];
 
 	char state[MAX_SIZE];	
-
-	static const double threshold = 3.0 / 4.0;
 
 	/*------Your own structure-------*/
 
@@ -39,7 +37,7 @@ public:
 
 BranchPredictor::BranchPredictor() {
 
-	for(int i = 0; i < 8000; i++){
+	for(int i = 0; i < 4000; i++){
 
 		prediction[i] = false;
 
@@ -68,11 +66,11 @@ bool BranchPredictor::makePrediction(int address) {
 	/*------------------edit-----------------------*/
 	int temp = (int)(state[address % MAX_SIZE]);
 	if(temp < 2){
-		prediction[address % 8000] = false;
+		prediction[address % 4000] = false;
 		return false;
 	}
 	else{
-		prediction[address % 8000] = true;
+		prediction[address % 4000] = true;
 		return true;
 	}
 	/***********************************************/
@@ -95,7 +93,7 @@ bool BranchPredictor::makePrediction(int address) {
 int BranchPredictor::makeUpdate(int address, bool pred, bool act) {	
 	/*------------------edit-----------------------*/
 	int temp = (int)(state[address % MAX_SIZE]);	
-	cout<<prediction[address % 8000]<<" "<<pred<<endl;
+	
 	if(temp == 0){
 		if(pred == act)temp = 1;
 		else temp = 0;

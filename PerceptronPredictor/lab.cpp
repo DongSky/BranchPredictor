@@ -44,17 +44,23 @@ static BOOL predict=false;
 static BOOL FIRST=false;
 static INS nextIns;
 static INS lastIns;
-static UINT32 correct=0;
-static UINT32 fail=0;
+static unsigned long long correct=0;
+static unsigned long long fail=0;
 
 // These function is called before every instruction is executed
 VOID makePre(UINT32 addr) { pre->makePrediction((int)addr); }
 VOID makeUp(UINT32 addr,BOOL pred,BOOL act) { pre->makeUpdate((int)addr,(bool)pred,(bool)act); }
-VOID docount(BOOL pre,BOOL act){
-    if(pre==act)    correct++;
+VOID docount(BOOL pred,BOOL act){
+    if(pred==act)    correct++;
     else fail++;
 }
-
+VOID doAll(UINT32 addr, BOOL act)
+{
+  pre->makePrediction(addr);
+  if((pre->prediction[addr % 20])==act) correct++;
+  else fail++;
+  pre->makeUpdate((int)addr,pre->prediction[addr % 20],(bool)act);
+}
 
 // Pin calls this function every time a new instruction is encountered
 VOID Instruction(INS ins, VOID *v)
@@ -67,11 +73,16 @@ VOID Instruction(INS ins, VOID *v)
     		if(INS_IsOriginal(lastIns) && nextAddress==(lastAddress+INS_Size(lastIns))) predict=false;
     		else predict=true;
 		/*************************edit***************************/
+/*
     		INS_InsertCall(ins,IPOINT_BEFORE,(AFUNPTR)(makePre),IARG_ADDRINT,lastAddress,IARG_END);//对本次分支做预测
+		INS_InsertCall(ins,IPOINT_BEFORE,(AFUNPTR)(docount),IARG_BOOL,pre->prediction[lastAddress % 4000],IARG_BOOL,predict,IARG_END);
+    		INS_InsertCall(ins,IPOINT_BEFORE,(AFUNPTR)(makeUp),IARG_ADDRINT,lastAddress,IARG_BOOL,pre->prediction[lastAddress % 4000],IARG_BOOL,predict,IARG_END);//对上次分支做验证
+  */      
+         //统计结果
 
-    		INS_InsertCall(ins,IPOINT_BEFORE,(AFUNPTR)(makeUp),IARG_ADDRINT,lastAddress,IARG_BOOL,pre->prediction[lastAddress % 20],IARG_BOOL,predict,IARG_END);//对上次分支做验证
-        
-         INS_InsertCall(ins,IPOINT_BEFORE,(AFUNPTR)(docount),IARG_BOOL,pre->prediction[lastAddress % 20],IARG_BOOL,predict,IARG_END);//统计结果
+
+INS_InsertCall(ins,IPOINT_BEFORE,(AFUNPTR)(doAll),IARG_ADDRINT,lastAddress,IARG_BOOL,predict,IARG_END);
+
 
 		/***** You need to design your own "pre->prediction[]" to save the imformation in .h,and edit the three "INS_InsertCall" ******/
     }
