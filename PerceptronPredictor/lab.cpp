@@ -57,9 +57,9 @@ VOID docount(BOOL pred,BOOL act){
 VOID doAll(UINT32 addr, BOOL act)
 {
   pre->makePrediction(addr);
-  if((pre->prediction[addr % 20])==act) correct++;
+  if((pre->prediction[addr % 128])==act) correct++;
   else fail++;
-  pre->makeUpdate((int)addr,pre->prediction[addr % 20],(bool)act);
+  pre->makeUpdate((int)addr,pre->prediction[addr % 128],(bool)act);
 }
 
 // Pin calls this function every time a new instruction is encountered

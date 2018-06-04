@@ -5,7 +5,7 @@ using namespace std;
 
 class BranchPredictor {
 int history_start_;
-	static const int kSize = 20;
+	static const int kSize = 128;
 	static const int kHistorySize = 12;
 	static const int kTheta = static_cast<int>(1.93 * kHistorySize + 14);
 	static const int kWeightSize = 8;
