@@ -1,116 +1,48 @@
 #pragma once
-
 #include <iostream>
-#include <bits/stdc++.h>
-#include <ctime>
-#define MAX_SIZE 4000
-
+#include <time.h>
+#include <map>
 using namespace std;
 
-
-
 class BranchPredictor {
-
-public:
-
-	/*--------------data--------------*/	//33KB MAX
-
-	//eg.    bool prediction[4000]
-
-	bool prediction[4000];
-
-	char state[MAX_SIZE];	
-
-	/*------Your own structure-------*/
-
-
-
+ public:
+	/*------data------*/	//33KB MAX
+  //map<unsigned long, char> prediction;
+	bool prediction[4000];  	
+	char pre[4000];
 	BranchPredictor();
-
-
-
-	bool makePrediction(int address);
-
-	int makeUpdate(int address,bool pred,bool act);
-
+	bool makePrediction(unsigned long address);
+	void makeUpdate(unsigned long address, bool predict, bool act);
 };
 
-BranchPredictor::BranchPredictor() {
-
-	for(int i = 0; i < 4000; i++){
-
-		prediction[i] = false;
-
-	}
-	for(int i = 0; i < MAX_SIZE; i++){
-		state[i] = (char)(0);
-	}
-
+BranchPredictor::BranchPredictor()
+{
 }
 
+/*
+ *int address：	预测地址
 
-
+ *RETURN 预测结果
+ */
+bool BranchPredictor::makePrediction(unsigned long address)
+{
+	/*------------------edit-----------------------*/
+  return prediction[address % 4000] = (pre[address % 4000] >= 2);
+}
 
 
 /*
-
-*int address：	预测地址
-
-
-
-*RETURN 预测结果
-
-*/
-
-bool BranchPredictor::makePrediction(int address) {
+ *int address：	预测地址
+ *bool pred：	prediction，预测结果
+ *bool act：		actually，实际运行结果
+ */
+void BranchPredictor::makeUpdate(unsigned long address, bool predict, bool act)
+{
 	/*------------------edit-----------------------*/
-	int temp = (int)(state[address % MAX_SIZE]);
-	if(temp < 2){
-		prediction[address % 4000] = false;
-		return false;
-	}
-	else{
-		prediction[address % 4000] = true;
-		return true;
-	}
-	/***********************************************/
+  if(act){
+    pre[address % 4000]=((pre[address % 4000]<<1)+1)%4;
+  } else{
+    pre[address % 4000]=(pre[address % 4000]<<1)%4;
+  }
 }
 
-
-
-
-
-/*
-
-*int address：	预测地址
-
-*bool pred：	prediction，预测结果
-
-*bool act：		actually，实际运行结果
-
-*/
-
-int BranchPredictor::makeUpdate(int address, bool pred, bool act) {	
-	/*------------------edit-----------------------*/
-	int temp = (int)(state[address % MAX_SIZE]);	
-	
-	if(temp == 0){
-		if(pred == act)temp = 1;
-		else temp = 0;
-	}
-	else if(temp == 1){
-		if(pred == act)temp = 3;
-		else temp = 0;
-	}
-	else if(temp == 2){
-		if(pred == act)temp = 3;
-		else temp = 0;
-	}
-	else{
-		if(pred == act)temp = 2;
-		else temp = 3;
-	}
-	state[address % MAX_SIZE] = (char)(temp);
-	/***********************************************/
-	return 0;
-}

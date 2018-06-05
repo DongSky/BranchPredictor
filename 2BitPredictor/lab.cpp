@@ -57,9 +57,9 @@ VOID docount(BOOL pred,BOOL act){
 VOID doAll(UINT32 addr, BOOL act)
 {
   pre->makePrediction(addr);
-  if((!pre->prediction[addr % 4000])==act) correct++;
-  else fail++;
   pre->makeUpdate((int)addr,pre->prediction[addr % 4000],(bool)act);
+  if((pre->prediction[addr % 4000])==act) correct++;
+  else fail++;
 }
 
 // Pin calls this function every time a new instruction is encountered
@@ -82,7 +82,6 @@ VOID Instruction(INS ins, VOID *v)
 
 
 INS_InsertCall(ins,IPOINT_BEFORE,(AFUNPTR)(doAll),IARG_ADDRINT,lastAddress,IARG_BOOL,predict,IARG_END);
-
 
 		/***** You need to design your own "pre->prediction[]" to save the imformation in .h,and edit the three "INS_InsertCall" ******/
     }
